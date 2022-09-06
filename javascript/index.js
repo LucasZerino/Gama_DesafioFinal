@@ -58,7 +58,7 @@ playerUpImage.src = './img/playerUp.png'
 const playerLeftImage = new Image()
 playerLeftImage.src = './img/playerLeft.png'
 
-const playerRightImage = await new Image()
+const playerRightImage = new Image()
 playerRightImage.src = './img/playerRight.png'
 
 class Sprite{
@@ -154,7 +154,7 @@ function rectangularCollision({rectangle1, rectangle2}) {
     )
 }
 
-async function animate(){
+function animate(){
     window.requestAnimationFrame(animate)
     background.draw()
     boundaries.forEach(boundary => {
@@ -168,7 +168,7 @@ async function animate(){
             }
         
     })
-    await player.draw()
+    player.draw()
 
     let moving = true
     player.moving = false
