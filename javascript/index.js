@@ -58,7 +58,7 @@ playerUpImage.src = './img/playerUp.png'
 const playerLeftImage = new Image()
 playerLeftImage.src = './img/playerLeft.png'
 
-const playerRightImage = new Image()
+const playerRightImage = await new Image()
 playerRightImage.src = './img/playerRight.png'
 
 class Sprite{
