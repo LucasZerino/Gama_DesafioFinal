@@ -154,7 +154,7 @@ function rectangularCollision({rectangle1, rectangle2}) {
     )
 }
 
-function animate(){
+async function animate(){
     window.requestAnimationFrame(animate)
     background.draw()
     boundaries.forEach(boundary => {
@@ -168,7 +168,7 @@ function animate(){
             }
         
     })
-    player.draw()
+    await player.draw()
 
     let moving = true
     player.moving = false
