@@ -10,20 +10,13 @@ for(let i=0; i<collisions.length; i+= 70){
    collisionsMap.push(collisions.slice(i, 70 + i))
 }
 
-class Boundary{
-    static width = 48
-    static height = 48
-    constructor({position}){
-        this.position = position
-        this.width = 48
-        this.height = 48
-    }
-
-    draw(){
-        c.fillStyle = 'rgba(255,0,0,0.0)'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
+const battleZonesMap = []
+for(let i=0; i<battleZonesData.length; i+= 70){
+    battleZonesMap.push(battleZonesData.slice(i, 70 + i))
 }
+
+console.log(gsap)
+
 
 const boundaries = []
 const offset = {
@@ -41,6 +34,19 @@ collisionsMap.forEach((row, i) => {
     })
 })
 
+const battleZones = []
+
+battleZonesMap.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if(symbol ===340)
+        battleZones.push(new Boundary({ position: {
+            x: j * Boundary.width + offset.x,
+            y: i * Boundary.height + offset.y
+        }}))
+    })
+})
+
+console.log(battleZones)
 
 
 c.fillStyle = 'white'
@@ -61,43 +67,7 @@ playerLeftImage.src = './img/playerLeft.png'
 const playerRightImage = new Image()
 playerRightImage.src = './img/playerRight.png'
 
-class Sprite{
-    constructor({position, velocity, image, frames = {max: 1}, sprites = []}){
-        this.position = position
-        this.image = image
-        this.frames = {...frames, val: 0, elapsed: 0}
 
-        this.image.onload = () => {
-            this.width = this.image.width / this.frames.max
-            this.height = this.image.height
-        }
-        this.moving = false
-        this.sprites = sprites
-    }
-    draw(){
-        c.drawImage(
-            this.image,
-            this.frames.val * this.width,
-            0,
-            this.image.width / this.frames.max,
-            this.image.height,
-            this.position.x,
-            this.position.y,
-            this.image.width / this.frames.max,
-            this.image.height
-        )
-
-        if(!this.moving) return
-        if(this.frames.max > 1){
-            this.frames.elapsed++
-        }
-
-        if(this.frames.elapsed % 10 === 0){
-            if(this.frames.val < this.frames.max - 1) this.frames.val++
-            else this.frames.val = 0
-        }
-    }
-}
 
 const player = new Sprite({
     position: {
@@ -143,7 +113,7 @@ const keys = {
 
 
 
-const movables = [background, ...boundaries]
+const movables = [background, ...boundaries, ...battleZones]
 
 function rectangularCollision({rectangle1, rectangle2}) {
     return(
@@ -154,24 +124,67 @@ function rectangularCollision({rectangle1, rectangle2}) {
     )
 }
 
+const battle = {
+    initiated: false
+}
+
 function animate(){
-    window.requestAnimationFrame(animate)
+    const animationId = window.requestAnimationFrame(animate)
+    console.log(animationId)
     background.draw()
     boundaries.forEach(boundary => {
-        boundary.draw()
-
-        if(rectangularCollision({
-            rectangle1: player,
-            rectangle2: boundary
-        })){
-               
-            }
-        
+        boundary.draw()   
+    })
+    battleZones.forEach(battleZone => {
+        battleZone.draw()
     })
     player.draw()
 
     let moving = true
     player.moving = false
+
+    if(battle.initiated) return
+    //Ativar batalha
+
+    if(keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed){
+        for(let i = 0; i< battleZones.length; i++){
+            const battleZone = battleZones[i]
+            const overlappingArea = (Math.min(player.position.x + player.width, battleZone.position.x + battleZone.width) - Math.max(player.position.x, battleZone.position.x)) * (Math.min(player.position.y + player.height, battleZone.position.y + battleZone.height) - Math.max(player.position.y, battleZone.position.y))
+            if(
+                rectangularCollision({
+                    rectangle1: player,
+                    rectangle2: battleZone
+                }) && 
+                overlappingArea > (player.width * player.height) /2
+                && Math.random() <0.06
+            ){
+                console.log("Batalha ativada")
+                window.cancelAnimationFrame(animationId)
+
+                battle.initiated = true
+                gsap.to("#overlappingDiv", {
+                    opacity: 1,
+                    repeat: 3,
+                    yoyo: true,
+                    duration: 0.4,
+                    onComplete(){
+                        gsap.to("#overlappingDiv", {
+                            opacity: 1,
+                            duration: 0.4,
+                            onComplete(){
+                                animateBattle()
+                                gsap.to("#overlappingDiv", {
+                                    opacity: 0,
+                                    duration: 0.4,
+                                })
+                            }
+                        })
+                    }
+                })
+                break
+            }
+    }}
+
    if(keys.w.pressed && lastKey === 'w') {
     player.moving = true
     player.image = player.sprites.up
@@ -191,6 +204,8 @@ function animate(){
             break
         }
     }
+
+    
     if(moving === true)
     movables.forEach(movable => {movable.position.y +=3})
    }
@@ -279,6 +294,22 @@ function animate(){
 }
 
 animate()
+
+const battleBackgroundImage = new Image()
+battleBackgroundImage.src = './img/battleBackground.png'
+const battleBackground =  new Sprite({position: {
+    x: 0,
+    y: 0
+},
+image: battleBackgroundImage
+})
+
+function animateBattle(){
+    window.requestAnimationFrame(animateBattle)
+    battleBackground.draw()
+}
+
+animateBattle()
 
 let lastKey = ''
 window.addEventListener('keydown', (e) => {
