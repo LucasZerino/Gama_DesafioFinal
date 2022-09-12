@@ -344,10 +344,4 @@
     AOS.init();
         }
 
-     // :: Wow js Active Code
-
-     if ($constrom_window.width() > 767) {
-         new WOW().init();
-     }
-
  })(jQuery);
