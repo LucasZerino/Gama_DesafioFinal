@@ -5,15 +5,15 @@ const monsters = {
       y: 330
     },
     image: {
-      src: './img/embySprite.png'
+      src: '../img/embySprite.png'
     },
     frames: {
       max: 4,
       hold: 30
     },
     animate: true,
-    name: 'Caterpie',
-    attacks: [attacks.Tackle, attacks.Fireball]
+    name: 'Emby',
+    attacks: [attacks.Tackle, attacks.Fireball, attacks.ManaPotion, attacks.HealthPotion]
   },
   Draggle: {
     position: {
@@ -21,7 +21,7 @@ const monsters = {
       y: 150
     },
     image: {
-      src: './img/draggleSprite.png'
+      src: '../img/draggleSprite.png'
     },
     frames: {
       max: 4,

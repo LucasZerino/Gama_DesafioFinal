@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.16;
 
 import './ERC20.sol';
@@ -15,11 +14,11 @@ contract PokeStop is ERC20 {
     mapping(address => uint) public ManaPotion;
 
     constructor() ERC20("PokeCoin", "PKC") {
-        uint256 _amount = 1000;
-        _mint(msg.sender, _amount);
+        _mint(msg.sender,1000);
         owner = payable(msg.sender);
         ManaPotion[address(this)] = 100;
         HealthPotion[address(this)] = 100;
+        MachineBalance[owner] = 100;
     }
 
     modifier isOwner() {
@@ -32,19 +31,18 @@ contract PokeStop is ERC20 {
     _;
     }
 
-    function refill(uint amount, uint256 _coinPrice, uint256 _sellPrice) public isOwner {
+    function refill(uint amount) public isOwner {
         require(balanceOf(msg.sender) >= amount, "Voce nao tem tokens suficientes para realizar essa operacao!");
         require(amount>0, "Voce nao pode recarregar  maquina com 0 tokens!");
-        require(_coinPrice > 0, "O valor de compra do token nao pode ser 0!");
-        require(_sellPrice > 0, "O valor de venda do token nao pode ser 0!");
         _transfer(msg.sender, address(this), amount);
-        MachineBalance[address(this)] = amount;
-        coinPrice = _coinPrice * 1 ether;
-        sellPrice = _sellPrice * 1 ether;
+        MachineBalance[address(this)] += amount;
+        coinPrice = 1000000000000000;
+        sellPrice = 1000000000000000;
     }
 
     function refillEthers(uint _amount) payable public isOwner{
         require(_amount>0, "Voce nao pode recarregar a maquina com 0 Ethers");
+        require(msg.sender.balance> _amount, "voce nao tem essa quantidade de Ethers");
     }
 
     function refillHealthPotion(uint _amount) public isOwner{
@@ -83,13 +81,12 @@ contract PokeStop is ERC20 {
         HealthPotion[msg.sender] -= amount;
     }
 
-    function sellCoin (uint _amount, address payable _recipient) payable public {
+    function sellCoin (uint _amount) payable public {
         require(MachineBalance[msg.sender]>=_amount, "Voce nao tem tokens suficientes!");
         require(address(this).balance >= _amount, "A maquina nao tem ether o suficiente!");
         _transfer(msg.sender, address(this), _amount);
         MachineBalance[msg.sender] -= _amount;
         MachineBalance[address(this)] += _amount; 
-        _recipient.transfer(_amount * sellPrice);
     }
 
     function withdraw(uint _amount) external isOwner{

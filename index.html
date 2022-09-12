@@ -1,197 +1,504 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./node_modules/web3/dist/web3.min.js"></script>
-    <title>Crypto Game</title>
-    <style>
-        * {
-          font-family: 'Press Start 2P', cursive;
-          box-sizing: border-box;
-        }
-    
-        body {
-          background-color: black;
-        }
-    
-        h1 {
-          margin: 0;
-        }
-    
-        button {
-          border: 0;
-          cursor: pointer;
-          font-size: 16px;
-        }
-    
-        button:hover {
-          background-color: #ddd;
-        }
-      </style>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../node_modules/web3/dist/web3.min.js"></script>
+    <title>Crypto Coin</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="css/style.css">
+
 </head>
+
 <body>
-    <div style="display: inline-block; position: relative">
-        <div
-          id="overlappingDiv"
-          style="
-            background-color: black;
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 10;
-          "
-        ></div>
-      
-        <canvas></canvas>
-        <div
-          id="characterDialogueBox"
-          style="
-            background-color: white;
-            height: 140px;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            border-top: 4px black solid;
-            display: none;
-            padding: 12px;
-          "
-        ></div>
-      
-        <div id="userInterface" style="display: none">
-          <!-- Represents health bar of draggle (enemy) -->
-          <div
-            style="
-              background-color: white;
-              width: 250px;
-              position: absolute;
-              top: 50px;
-              left: 50px;
-              border: 4px black solid;
-              padding: 12px;
-            "
-          >
-            <h1 style="font-size: 16px">Draggle</h1>
-            <div style="position: relative">
-              <div
-                style="height: 5px; background-color: #ccc; margin-top: 10px"
-              ></div>
-              <div
-                id="enemyHealthBar"
-                style="
-                  height: 5px;
-                  background-color: green;
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                "
-              ></div>
-            </div>
-          </div>
-      
-          <!-- Represents health bar of emby (us) -->
-          <div
-            style="
-              background-color: white;
-              width: 250px;
-              position: absolute;
-              top: 330px;
-              right: 50px;
-              border: 4px black solid;
-              padding: 12px;
-            "
-          >
-            <h1 style="font-size: 16px">Emby</h1>
-            <div style="position: relative">
-              <div
-                style="height: 5px; background-color: #ccc; margin-top: 10px"
-              ></div>
-              <div
-                id="playerHealthBar"
-                style="
-                  height: 5px;
-                  background-color: green;
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                "
-              ></div>
-            </div>
-          </div>
-      
-          <div
-            style="
-              background-color: white;
-              height: 140px;
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              border-top: 4px black solid;
-              display: flex;
-            "
-          >
-            <div
-              id="dialogueBox"
-              style="
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-color: white;
-                padding: 12px;
-                display: none;
-                cursor: pointer;
-              "
-            >
-              sdkfjlsdajl
-            </div>
-            <div
-              id="attacksBox"
-              style="
-                width: 66.66%;
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-              "
-            ></div>
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 33.33%;
-                border-left: 4px black solid;
-              "
-            >
-              <h1 id="attackType" style="font-size: 16px">Attack Type</h1>
-            </div>
-          </div>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
-      </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="data/audio.js"></script>
-    <script src="data/battleZones.js"></script>
-    <script src="data/collisions.js"></script>
-    <script src="data/attacks.js"></script>
-    <script src="data/monsters.js"></script>
-    <script src="data/characters.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="classes.js"></script>
-    <script src="index.js"></script>
-    <script src="battleScene.js"></script>
-    <script src="./js/web3js/functions.js"></script>
+    </div>
+    <!-- Preloader -->
+
+    <!-- Login Area -->
+    <div class="login-area">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- Login tab Area -->
+                        <div class="login-tab-area">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                                        aria-selected="true">Existing User</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-profile" type="button" role="tab"
+                                        aria-controls="pills-profile" aria-selected="false">New User</button>
+                                </li>
+                            </ul>
+                            <!-- Tab Content -->
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login Area -->
+
+    <!-- header-start -->
+    <header class="site-header site-header--menu-right landing-1-menu site-header--absolute site-header--sticky">
+        <div class="container">
+            <nav class="navbar site-navbar">
+                <!-- Brand Logo-->
+                <div class="brand-logo">
+                    <a href="#">
+                        <img src="img/logo.png" alt="" class="dark-version-logo">
+                    </a>
+                </div>
+                <div class="menu-block-wrapper">
+                    <div class="menu-overlay"></div>
+                    <nav class="menu-block" id="append-menu-header">
+                        <div class="mobile-menu-head">
+                            <div class="go-back">
+                                <i class="fa fa-angle-left"></i>
+                            </div>
+                            <div class="current-menu-title"></div>
+                            <div class="mobile-menu-close">&times;</div>
+                        </div>
+                        <ul class="site-menu-main">
+                            <li class="nav-item nav-item-has-children">
+                                <a href="#" class="nav-link-item drop-trigger">Home 
+                                </a>
+                            </li>
+                            <li class="nav-link-item">
+                                <button class="sign-btn" id="btn-conect"><img
+                                    src="img/icon-img/10.png" alt="" id="conectar">Login</button>
+                        </ul>
+                    </nav>
+                </div>
+                <!-- mobile menu trigger -->
+                <div class="mobile-menu-trigger">
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!-- header-end -->
+
+    <!-- Welcome-area-start -->
+    <div class="welcome-area home-2 bg-overlay-3 bg-img" style="background-image: url(img/bg-img/h-shape.jpg);">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center justify-content-center">
+                <div class="col-md-7">
+                    <div class="welcome-content home-2">
+                        <h3>Seja bem vindo ao<br><span>Poke Crypto</span></h3>
+                        <p> O seu game crypto de pokemons.</p>
+                        <div class="btn-area">
+                            <button class="btn btn-box" id="btn-conect">Login</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slider Area -->
+                <div class="col-md-5">
+                    <!-- Swiper -->
+                    <div class="swiper mySwiper2">
+                        <div class="swiper-wrapper text-center">
+                            <div class="swiper-slide">
+                                <img src="img/bg-img/h-1.jpg" alt="" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="img/bg-img/h-2.png" alt="" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="img/bg-img/h-3.png" alt="" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="img/bg-img/h-1.jpg" alt="" />
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Welcome-area-end -->
+
+    <!-- Wallet Area -->
+    <div class="wallet-area section-padding-100-50">
+        <div class="container">
+            <div class="row">
+                <!-- Heading Title -->
+                <div class="col-12 text-center">
+                    <h6 class="heading-sub">Carteira</h6>
+                    <h2 class="heading-title">Faça conexão com sua metamask!</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Single Wallet Area -->
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-duration="800">
+                    <div class="single-wallet-area two">
+                        <!-- Image -->
+                        <div class="wallet-image">
+                            <img src="img/icon-img/16.png" alt="">
+                        </div>
+
+                        <!-- Content text -->
+                        <div class="wallet-content-text">
+                            <h4><a href="#" id="conectar">Metamask</a></h4>
+                            <p>Faça login coma  metamask na rede RinkebyETH.</p>
+                        </div>
+                    </div>
+                </div>
+
+          
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- About us Area -->
+    <div class="about-us-area bg-color-cu section-padding-100-50">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="about-image-area text-center mb-50">
+                        <div class="about-feature-img welcome-thumb">
+                            <img src="img/bg-img/about1.png" alt="">
+                        </div>
+                        <div class="about-image-2">
+                            <img src="img/bg-img/about.png" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text -->
+                <div class="col-md-6">
+                    <div class="about-content-text pb-50">
+                        <h2>Como jogar?</h2>
+
+                        <p class="mb-0">Após conectar a metamask, você pode comprar nossos PokeCoins, e com eles os items do jogo, para movimentação utilizamos as teclas "A,W,S,D"!</p>
+                        <div class="btn-area mt-50">
+                            <button class="btn btn-box" id="btn-conect">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About us Area -->
+
+    <!-- Our Team Area -->
+    <div class="our-team-area bg-color-cu section-padding-100-50">
+        <div class="container">
+            <div class="row">
+                <!-- Heading Title -->
+                <div class="col-12 text-center">
+                    <h6 class="heading-sub">Team Members</h6>
+                    <h2 class="heading-title">Our Amazing Team</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Single team area -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="single-team-area text-center">
+                        <span class="border-one"></span>
+                        <span class="border-two"></span>
+                        <!-- team image -->
+                        <div class="team-image">
+                            <img src="img/bg-img/t-1.png" alt="Image" />
+                        </div>
+
+                        <!-- Team content text -->
+                        <div class="team-content-text text-center">
+                            <h4>Lucas Matheus</h4>
+                            <h6>Full Stack Developer</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single team area -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="single-team-area text-center">
+                        <span class="border-one"></span>
+                        <span class="border-two"></span>
+                        <!-- team image -->
+                        <div class="team-image">
+                            <img src="img/bg-img/t-2.png" alt="Image" />
+                        </div>
+
+                        <!-- Team content text -->
+                        <div class="team-content-text text-center">
+                            <h4>Alda A. Menezes</h4>
+                            <h6>Full Stack Developer</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single team area -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="single-team-area text-center">
+                        <span class="border-one"></span>
+                        <span class="border-two"></span>
+                        <!-- team image -->
+                        <div class="team-image">
+                            <img src="img/bg-img/t-3.png" alt="Image" />
+                        </div>
+
+                        <!-- Team content text -->
+                        <div class="team-content-text text-center">
+                            <h4>Ismal Mesquita</h4>
+                            <h6>Full Stack Developer</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Single team area -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="single-team-area text-center">
+                        <span class="border-one"></span>
+                        <span class="border-two"></span>
+                        <!-- team image -->
+                        <div class="team-image">
+                            <img src="img/bg-img/t-4.png" alt="Image" />
+                        </div>
+
+                        <!-- Team content text -->
+                        <div class="team-content-text text-center">
+                            <h4>Lázaro Pimentel</h4>
+                            <h6>Full Stack Developer</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Our Team Area -->
+
+  
+
+   
+
+    <!-- Footer Contact Area -->
+    <div class="footer-contact-area bg-img bg-overlay  bg-fixed section-padding-100"
+        style="background-image: url(img/bg-img/bg-shape.jpg);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                   
+                        <!-- Single Slider -->
+                        <div class="single-slider">
+                            <div class="parnet-img">
+                                <img src="img/icon-img/16.png" alt="Image" />
+                            </div>
+                        </div>
+                   
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Footer Widget -->
+                <div class="col-sm-5 col-lg-4">
+                    <div class="footer-single-widget mb-50">
+                        <div class="footer-logo">
+                            <a href="#"><img src="img/logo.png" alt="Image" /></a>
+                        </div>
+                        <div class="f-add-info mt-30">
+                            <p>Local - <span>Brasil</span></p>
+                            <p>Telefone - <a href="#">99999999</a></p>
+                            <p>E-mail - <a href="#">example12@gmail.com</a></p>
+                        </div>
+                        <div class="footer-socila-icon">
+                            <a href="#"><i class="bi bi-facebook"></i></a>
+                            <a href="#"><i class="bi bi-twitter"></i></a>
+                            <a href="#"><i class="bi bi-instagram"></i></a>
+                            <a href="#"><i class="bi bi-whatsapp"></i></a>
+                        </div>
+                        <!-- Contact Form -->
+                        <div class="subscribe-form-area d-flex align-items-center mt-50">
+                            <input type="email" class="form-control" placeholder="info@mail.com">
+                            <button type="submit" class="btn"><i class="bi bi-send"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-7 col-lg-8">
+                    <div class="row">
+                        <!-- Footer Widget -->
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="footer-single-widget first mb-50">
+                                <h4>Links Úteis</h4>
+                                <ul>
+                                    <li><a href="#">Central de Ajuda</a></li>
+                                    <li><a href="#">Termos e condições</a></li>
+                                    <li><a href="#">Políticas de Privacidade</a></li>
+                                    <li><a href="#">Campanha</a></li>
+                                    <li><a href="#">Atualizações</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Footer Widget -->
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="footer-single-widget second mb-50">
+                                <h4>Marketplace</h4>
+                                <ul>
+                                    <li><a href="#">Autores</a></li>
+                                    <li><a href="#">Coleção de Personagens</a></li>
+                                    <li><a href="#">Perfil dos autores</a></li>
+                                    <li><a href="#">Criar um item</a></li>
+                                    <li><a href="#">Criar uma API</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Footer Widget -->
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="footer-single-widget third mb-50">
+                                <h4>Poke Coin</h4>
+                                <ul>
+                                    <li><a href="#">Todos os Jogos</a></li>
+                                    <li><a href="#">Colecionaveis</a></li>
+                                    <li><a href="#">Perfil do CEO</a></li>
+                                    <li><a href="#">Moedas</a></li>
+                                    <li><a href="#">NFTS</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Footer Widget -->
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="footer-single-widget four mb-50">
+                                <h4>Comunidade</h4>
+                                <ul>
+                                    <li><a href="#">Troca de Tokens</a></li>
+                                    <li><a href="#">Troca de poções</a></li>
+                                    <li><a href="#">Venda de poções</a></li>
+                                    <li><a href="#">Forums</a></li>
+                                    <li><a href="#">Perfil no github</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Copy Right Area -->
+        <div class="copy-right-area">
+            <div class="container">
+                <div class="row">
+                    <!-- Copy Content -->
+                    <div class="col-md-6">
+                        <div class="copy-right-content-text">
+                            <p>© Copyright & Develop By PokeCoin (2022).</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="copy-right-content-text">
+                            <ul class="d-flex flex-wrap justify-content-end">
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms &amp; Conditions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Copy Right Area -->
+    </div>
+    <!-- Footer Contact Area -->
+
+    <!-- JS here -->
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/swiper-bundle.min.js"></script>
+    <script src="js/jquery.scrollUp.min.js"></script>
+    <script src="js/aos.js"></script>
+    <!-- Custom js-->
+    <script src="js/main.js"></script>
+    <script>
+         async function run(){
+                const web3 = new Web3(window.ethereum)
+                let endereco = "0xe180B650afAaC4910E81B4F3C7B99b091FAc46d8"
+                let abi = [ { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "Transfer", "type": "event" }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" } ], "name": "HealthPotion", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "HealthPrice", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" } ], "name": "MachineBalance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" } ], "name": "ManaPotion", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "ManaPrice", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" }, { "internalType": "address", "name": "", "type": "address" } ], "name": "_allowances", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" } ], "name": "_balances", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "_name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "_symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "_totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" } ], "name": "allowance", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "approve", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "balanceOf", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "coinPrice", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "decimals", "outputs": [ { "internalType": "uint8", "name": "", "type": "uint8" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" } ], "name": "decreaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" } ], "name": "increaseAllowance", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address payable", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "sellPrice", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "symbol", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [], "name": "totalSupply", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transfer", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "recipient", "type": "address" }, { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "transferFrom", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "refill", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_amount", "type": "uint256" } ], "name": "refillEthers", "outputs": [], "stateMutability": "payable", "type": "function", "payable": true }, { "inputs": [ { "internalType": "uint256", "name": "_amount", "type": "uint256" } ], "name": "refillHealthPotion", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_amount", "type": "uint256" } ], "name": "refillManaPotion", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "buyCoin", "outputs": [], "stateMutability": "payable", "type": "function", "payable": true }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "buyMana", "outputs": [], "stateMutability": "payable", "type": "function", "payable": true }, { "inputs": [ { "internalType": "uint256", "name": "amount", "type": "uint256" } ], "name": "buyHealth", "outputs": [], "stateMutability": "payable", "type": "function", "payable": true }, { "inputs": [ { "internalType": "uint256", "name": "_amount", "type": "uint256" } ], "name": "sellCoin", "outputs": [], "stateMutability": "payable", "type": "function", "payable": true }, { "inputs": [ { "internalType": "uint256", "name": "_amount", "type": "uint256" } ], "name": "withdraw", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "viewMachineEthers", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function", "constant": true }, { "inputs": [ { "internalType": "uint256", "name": "_price", "type": "uint256" } ], "name": "changeBuyPrice", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_price", "type": "uint256" } ], "name": "changeSellPrice", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_price", "type": "uint256" } ], "name": "changeHealthPrice", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "_price", "type": "uint256" } ], "name": "changeManaPrice", "outputs": [], "stateMutability": "nonpayable", "type": "function" } ]
+
+                let contrato = new web3.eth.Contract(abi, endereco);
+
+                let owner = await contrato.methods.owner().call();
+                let ownerlow = owner.toLowerCase();
+
+                console.log("Dono do contrato aqui!", ownerlow)
+
+
+                var provider = window.ethereum;
+                if(!provider){
+                document.getElementById("conectar").innerHTML = "Por favor, instale a Meatamask!"
+                }else contas = await provider.request({method: 'eth_requestAccounts'});
+                if(contas.length == 0){
+                    document.getElementById("btn-conect").style.display = "block";
+                    document.getElementById("btn-conect").addEventListener("click", connectMM);
+                }
+                if(contas.length >= 1){
+                    document.getElementById("conectar").innerHTML = "Você já está conectado, será redirecionado!"
+                    let user = contas[0]
+                    if(contas[0] == ownerlow){
+                        console.log("redirecionando para pagina do dono!")
+                        localStorage.setItem("logado", "owner")
+                         window.location.href = './pages/gameOwner.html';
+                    }else if(user != ownerlow){
+                        console.log("fui para user")
+                        localStorage.setItem("logado", "user")
+                         window.location.href = './pages/gameuser.html';
+                    }
+                }
+            }
+
+            async function connectMM(){
+                let contas = await provider.request({method: 'eth_requestAccounts'});
+                localStorage.setItem("conta", contas[0]);
+                if(contas[0] == ownerlow){
+                        console.log("redirecionando para pagina do dono!")
+                        localStorage.setItem("logado", "owner")
+                         window.location.href = './pages/gameOwner.html';
+                    }else if(user != ownerlow){
+                        console.log("fui para user")
+                        localStorage.setItem("logado", "user")
+                        // window.location.href = './pages/gameuser.html';
+                    }
+            }
+
+            run();
+    </script>
 </body>
+
 </html>

@@ -1,5 +1,5 @@
 const battleBackgroundImage = new Image()
-battleBackgroundImage.src = './img/battleBackground.png'
+battleBackgroundImage.src = '../img/battleBackground.png'
 const battleBackground = new Sprite({
   position: {
     x: 0,
@@ -19,6 +19,7 @@ function initBattle() {
   document.querySelector('#dialogueBox').style.display = 'none'
   document.querySelector('#enemyHealthBar').style.width = '100%'
   document.querySelector('#playerHealthBar').style.width = '100%'
+  document.querySelector('#playerManaBar').style.width = '100%'
   document.querySelector('#attacksBox').replaceChildren()
 
   draggle = new Monster(monsters.Draggle)
@@ -39,7 +40,8 @@ function initBattle() {
       emby.attack({
         attack: selectedAttack,
         recipient: draggle,
-        renderedSprites
+        renderedSprites,
+        user: emby
       })
 
       if (draggle.health <= 0) {
@@ -74,7 +76,8 @@ function initBattle() {
         draggle.attack({
           attack: randomAttack,
           recipient: emby,
-          renderedSprites
+          renderedSprites,
+          user: draggle
         })
 
         if (emby.health <= 0) {

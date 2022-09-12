@@ -1,22 +1,14 @@
 {
-  "name": "gama_desafiofinal",
+  "name": "projeto-final",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LucasZerino/Gama_DesafioFinal.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/LucasZerino/Gama_DesafioFinal/issues"
-  },
-  "homepage": "https://github.com/LucasZerino/Gama_DesafioFinal#readme",
   "dependencies": {
     "web3": "^1.7.5"
   }

@@ -57,10 +57,10 @@ battleZonesMap.forEach((row, i) => {
 
 const characters = []
 const villagerImg = new Image()
-villagerImg.src = './img/villager/Idle.png'
+villagerImg.src = '../img/villager/Idle.png'
 
 const oldManImg = new Image()
-oldManImg.src = './img/oldMan/Idle.png'
+oldManImg.src = '../img/oldMan/Idle.png'
 
 charactersMap.forEach((row, i) => {
   row.forEach((symbol, j) => {
@@ -116,20 +116,20 @@ charactersMap.forEach((row, i) => {
 })
 
 const image = new Image()
-image.src = './img/map.png'
+image.src = '../img/map.png'
 
 
 const playerDownImage = new Image()
-playerDownImage.src = './img/playerDown.png'
+playerDownImage.src = '../img/playerDown.png'
 
 const playerUpImage = new Image()
-playerUpImage.src = './img/playerUp.png'
+playerUpImage.src = '../img/playerUp.png'
 
 const playerLeftImage = new Image()
-playerLeftImage.src = './img/playerLeft.png'
+playerLeftImage.src = '../img/playerLeft.png'
 
 const playerRightImage = new Image()
-playerRightImage.src = './img/playerRight.png'
+playerRightImage.src = '../img/playerRight.png'
 
 const player = new Sprite({
   position: {
@@ -392,6 +392,7 @@ function animate() {
       })
   }
 }
+
 // animate()
 
 let lastKey = ''
