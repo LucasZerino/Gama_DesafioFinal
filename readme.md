@@ -30,6 +30,7 @@
  npm install
  dar run no arquivo index.html
  --Você precisa ter a Metamask Conectada
+ --Você precisa estar conectado a rede RinkebyETH
  --O jogo é controlado pelas teclas "W,A,S,D"
 ```
 
