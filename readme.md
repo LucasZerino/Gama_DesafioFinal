@@ -31,6 +31,7 @@
  dar run no arquivo index.html
  --Você precisa ter a Metamask Conectada
  --Você precisa estar conectado a rede RinkebyETH
+ -- Address do contrato: 0xe180B650afAaC4910E81B4F3C7B99b091FAc46d8
  --O jogo é controlado pelas teclas "W,A,S,D"
 ```
 
